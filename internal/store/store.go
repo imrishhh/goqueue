@@ -78,9 +78,14 @@ type Creator interface {
 
 type Updater interface {
 	JobUpdater
+	JobAttemptUpdater
 }
 
-type Delete interface{}
+type Delete interface {
+	DeleteJob(ctx context.Context, jobID uuid.UUID) error
+	DeleteJobAttempt(ctx context.Context, jobAttemptID uuid.UUID) error
+	DeleteWorker(ctx context.Context, workerID string) error
+}
 
 type Reader interface {
 	JobReader
@@ -94,7 +99,7 @@ type JobReader interface {
 }
 
 type JobUpdater interface {
-	UpdateJob(ctx context.Context, job JobUpdate) (*Job, error)
+	UpdateJob(ctx context.Context, jobID uuid.UUID, update JobUpdate) (*Job, error)
 }
 
 type JobUpdate struct {
@@ -135,6 +140,20 @@ type JobAttemptFilter struct {
 	DurationMS     *int
 }
 
+type JobAttemptUpdater interface {
+	UpdateJobAttempt(ctx context.Context, jobAttemptID uuid.UUID, update JobAttemptUpdate) (*JobAttempt, error)
+}
+
+type JobAttemptUpdate struct {
+	JobID      *uuid.UUID
+	WorkerID   *string
+	StartedAt  *time.Time
+	FInishedAt *time.Time
+	Success    *bool
+	Error      *string
+	DurationMS *int
+}
+
 type WorkerReader interface {
 	GetWorker(ctx context.Context, workerID string) (*Worker, error)
 	ListWorkers(ctx context.Context, filter WorkerFilter, page Pagination) ([]Worker, error)
@@ -150,4 +169,17 @@ type WorkerFilter struct {
 	RegisteredFrom    *time.Time
 	RegisteredTo      *time.Time
 	RegisteredAt      *time.Time
+}
+
+type WorkerUpdater interface {
+	UpdateWorker(ctx context.Context, workerID string, update WorkerUpdate) (*Worker, error)
+}
+
+type WorkerUpdate struct {
+	ID            *string
+	Hostname      *string
+	Status        *WorkerStatus
+	Capabilites   []string
+	LastHeartbeat *time.Time
+	RegisterdAt   *time.Time
 }
