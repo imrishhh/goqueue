@@ -67,7 +67,7 @@ type Store interface {
 	Creator
 	Reader
 	Updater
-	Delete
+	Deleter
 }
 
 type Creator interface {
@@ -79,9 +79,10 @@ type Creator interface {
 type Updater interface {
 	JobUpdater
 	JobAttemptUpdater
+	WorkerUpdater
 }
 
-type Delete interface {
+type Deleter interface {
 	DeleteJob(ctx context.Context, jobID uuid.UUID) error
 	DeleteJobAttempt(ctx context.Context, jobAttemptID uuid.UUID) error
 	DeleteWorker(ctx context.Context, workerID string) error
