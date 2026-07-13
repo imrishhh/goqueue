@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,17 +19,18 @@ const (
 )
 
 type Job struct {
-	ID           uuid.UUID `json:"id" db:"id"`
-	Type         string    `json:"type" db:"type"`
-	Status       JobStatus `json:"status" db:"status"`
-	Priority     int16     `json:"priority" db:"priority"`
-	MaxAttempts  int16     `json:"max_attempts" db:"max_attempts"`
-	AttemptCount int16     `json:"attempt_count" db:"attempt_count"`
-	CreatedAt    time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
-	ScheduledAt  time.Time `json:"scheduled_at" db:"scheduled_at"`
-	CompletedAt  time.Time `json:"completed_at" db:"completed_at"`
-	DeadAt       time.Time `json:"dead_at" db:"dead_at"`
+	ID           uuid.UUID       `json:"id" db:"id"`
+	Type         string          `json:"type" db:"type"`
+	Status       JobStatus       `json:"status" db:"status"`
+	Payload      json.RawMessage `json:"payload" db:"payload"`
+	Priority     int16           `json:"priority" db:"priority"`
+	MaxAttempts  int16           `json:"max_attempts" db:"max_attempts"`
+	AttemptCount int16           `json:"attempt_count" db:"attempt_count"`
+	CreatedAt    time.Time       `json:"created_at" db:"created_at"`
+	UpdatedAt    time.Time       `json:"updated_at" db:"updated_at"`
+	ScheduledAt  time.Time       `json:"scheduled_at" db:"scheduled_at"`
+	CompletedAt  time.Time       `json:"completed_at" db:"completed_at"`
+	DeadAt       time.Time       `json:"dead_at" db:"dead_at"`
 }
 
 type JobAttempt struct {
@@ -116,12 +118,10 @@ type JobFilter struct {
 	Priority      *int16
 	CreatedFrom   *time.Time
 	CreatedTo     *time.Time
-	CreatedAt     *time.Time
 	ScheduledFrom *time.Time
 	ScheduledTo   *time.Time
 	UpdatedFrom   *time.Time
 	UpdatedTo     *time.Time
-	UpdatedAt     *time.Time
 }
 
 type JobAttemptReader interface {
@@ -134,11 +134,9 @@ type JobAttemptFilter struct {
 	Error          []string
 	FinishedFrom   *time.Time
 	FinishedTo     *time.Time
-	FinishedAt     *time.Time
 	Success        *bool
 	DurationMSFrom *int
 	DurationMSTo   *int
-	DurationMS     *int
 }
 
 type JobAttemptUpdater interface {
@@ -149,7 +147,7 @@ type JobAttemptUpdate struct {
 	JobID      *uuid.UUID
 	WorkerID   *string
 	StartedAt  *time.Time
-	FInishedAt *time.Time
+	FinishedAt *time.Time
 	Success    *bool
 	Error      *string
 	DurationMS *int
@@ -166,10 +164,8 @@ type WorkerFilter struct {
 	Status            *WorkerStatus
 	LastHeartbeatFrom *time.Time
 	LastHeartbeatTo   *time.Time
-	LastHeartbeatAt   *time.Time
 	RegisteredFrom    *time.Time
 	RegisteredTo      *time.Time
-	RegisteredAt      *time.Time
 }
 
 type WorkerUpdater interface {
@@ -180,7 +176,6 @@ type WorkerUpdate struct {
 	ID            *string
 	Hostname      *string
 	Status        *WorkerStatus
-	Capabilites   []string
 	LastHeartbeat *time.Time
 	RegisterdAt   *time.Time
 }
