@@ -65,52 +65,19 @@ type Pagination struct {
 	Limit  *int
 }
 
+// Store collects all the CRUD of components
 type Store interface {
-	Creator
-	Reader
-	Updater
-	Deleter
+	JobStore
+	JobAttemptStore
+	WorkerStore
 }
 
-type Creator interface {
-	CreateJob(ctx context.Context, job *Job) (*Job, error)
-	CreateJobAttempt(ctx context.Context, jobAttempt *JobAttempt) (*JobAttempt, error)
-	CreateWorker(ctx context.Context, worker *Worker) (*Worker, error)
-}
-
-type Updater interface {
-	JobUpdater
-	JobAttemptUpdater
-	WorkerUpdater
-}
-
-type Deleter interface {
-	DeleteJob(ctx context.Context, jobID uuid.UUID) error
-	DeleteJobAttempt(ctx context.Context, jobAttemptID uuid.UUID) error
-	DeleteWorker(ctx context.Context, workerID string) error
-}
-
-type Reader interface {
+// JobStore defines all the CRUD for jobs
+type JobStore interface {
+	JobCreator
 	JobReader
-	JobAttemptReader
-	WorkerReader
-}
-
-type JobReader interface {
-	GetJob(ctx context.Context, jobID uuid.UUID) (*Job, error)
-	ListJobs(ctx context.Context, filter JobFilter, page Pagination) ([]Job, error)
-}
-
-type JobUpdater interface {
-	UpdateJob(ctx context.Context, jobID uuid.UUID, update JobUpdate) (*Job, error)
-}
-
-type JobUpdate struct {
-	Status      *JobStatus
-	Priority    *int16
-	MaxAttempts *int16
-	CompletedAt *time.Time
-	DeadAt      *int16
+	JobUpdater
+	JobDeleter
 }
 
 type JobFilter struct {
@@ -124,9 +91,37 @@ type JobFilter struct {
 	UpdatedTo     *time.Time
 }
 
-type JobAttemptReader interface {
-	GetJobAttempt(ctx context.Context, attemptID uuid.UUID) (*JobAttempt, error)
-	ListJobAttempts(ctx context.Context, filter JobAttemptFilter, page Pagination) ([]JobAttempt, error)
+type JobUpdate struct {
+	Status      *JobStatus
+	Priority    *int16
+	MaxAttempts *int16
+	CompletedAt *time.Time
+	DeadAt      *int16
+}
+
+type JobCreator interface {
+	CreateJob(ctx context.Context, job *Job) (*Job, error)
+}
+
+type JobReader interface {
+	GetJob(ctx context.Context, jobID uuid.UUID) (*Job, error)
+	ListJobs(ctx context.Context, filter JobFilter, page Pagination) ([]Job, error)
+}
+
+type JobUpdater interface {
+	UpdateJob(ctx context.Context, jobID uuid.UUID, update JobUpdate) (*Job, error)
+}
+
+type JobDeleter interface {
+	DeleteJob(ctx context.Context, jobID uuid.UUID) error
+}
+
+// JobAttemptStore defines all the CRUD for job attempts
+type JobAttemptStore interface {
+	JobAttemptCreator
+	JobAttemptReader
+	JobAttemptUpdater
+	JobAttemptDeleter
 }
 
 type JobAttemptFilter struct {
@@ -139,10 +134,6 @@ type JobAttemptFilter struct {
 	DurationMSTo   *int
 }
 
-type JobAttemptUpdater interface {
-	UpdateJobAttempt(ctx context.Context, jobAttemptID uuid.UUID, update JobAttemptUpdate) (*JobAttempt, error)
-}
-
 type JobAttemptUpdate struct {
 	JobID      *uuid.UUID
 	WorkerID   *string
@@ -153,9 +144,29 @@ type JobAttemptUpdate struct {
 	DurationMS *int
 }
 
-type WorkerReader interface {
-	GetWorker(ctx context.Context, workerID string) (*Worker, error)
-	ListWorkers(ctx context.Context, filter WorkerFilter, page Pagination) ([]Worker, error)
+type JobAttemptCreator interface {
+	CreateJobAttempt(ctx context.Context, jobAttempt *JobAttempt) (*JobAttempt, error)
+}
+
+type JobAttemptReader interface {
+	GetJobAttempt(ctx context.Context, attemptID uuid.UUID) (*JobAttempt, error)
+	ListJobAttempts(ctx context.Context, filter JobAttemptFilter, page Pagination) ([]JobAttempt, error)
+}
+
+type JobAttemptUpdater interface {
+	UpdateJobAttempt(ctx context.Context, jobAttemptID uuid.UUID, update JobAttemptUpdate) (*JobAttempt, error)
+}
+
+type JobAttemptDeleter interface {
+	DeleteJobAttempt(ctx context.Context, jobAttemptID uuid.UUID) error
+}
+
+// WorkerStore defines all the CRUD for the workers
+type WorkerStore interface {
+	WorkerCreator
+	WorkerReader
+	WorkerUpdater
+	WorkerDeleter
 }
 
 type WorkerFilter struct {
@@ -168,14 +179,27 @@ type WorkerFilter struct {
 	RegisteredTo      *time.Time
 }
 
-type WorkerUpdater interface {
-	UpdateWorker(ctx context.Context, workerID string, update WorkerUpdate) (*Worker, error)
-}
-
 type WorkerUpdate struct {
 	ID            *string
 	Hostname      *string
 	Status        *WorkerStatus
 	LastHeartbeat *time.Time
 	RegisterdAt   *time.Time
+}
+
+type WorkerCreator interface {
+	CreateWorker(ctx context.Context, worker *Worker) (*Worker, error)
+}
+
+type WorkerReader interface {
+	GetWorker(ctx context.Context, workerID string) (*Worker, error)
+	ListWorkers(ctx context.Context, filter WorkerFilter, page Pagination) ([]Worker, error)
+}
+
+type WorkerUpdater interface {
+	UpdateWorker(ctx context.Context, workerID string, update WorkerUpdate) (*Worker, error)
+}
+
+type WorkerDeleter interface {
+	DeleteWorker(ctx context.Context, workerID string) error
 }
