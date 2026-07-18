@@ -1,5 +1,6 @@
 package store
 
+// Implementation of postgres for Store API
 import (
 	"context"
 	"fmt"
