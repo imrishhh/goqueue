@@ -4,7 +4,7 @@ package service
 import (
 	"context"
 
-	"github.com/imrishhh/goqueue/internal/store"
+	"github.com/imrishabk/goqueue/internal/store"
 )
 
 type workerService struct {

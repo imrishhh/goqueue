@@ -5,7 +5,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/imrishhh/goqueue/internal/store"
+	"github.com/imrishabk/goqueue/internal/store"
 )
 
 type jobService struct {

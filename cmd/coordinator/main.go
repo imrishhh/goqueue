@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/imrishhh/goqueue/internal/database"
+	"github.com/imrishabk/goqueue/internal/database"
 	"github.com/joho/godotenv"
 )
 

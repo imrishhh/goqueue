@@ -1,4 +1,4 @@
-module github.com/imrishhh/goqueue
+module github.com/imrishabk/goqueue
 
 go 1.26.3
 
